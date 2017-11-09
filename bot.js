@@ -271,7 +271,6 @@ function sendDefaultMessage(recipientId) {
       ]
     }
   };
-
   callSendAPI(textMessageData);
   callSendAPI(attachmentMessageData);
 }
