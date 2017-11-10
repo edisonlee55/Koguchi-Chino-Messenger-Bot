@@ -434,7 +434,7 @@ function setPersistentMenu(recipientId) {
 
 function callSendAPI(messageData) {
   request({
-    uri: 'https://graph.facebook.com/v2.10/me/messages',
+    uri: 'https://graph.facebook.com/v2.11/me/messages',
     qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
     method: 'POST',
     json: messageData
@@ -456,7 +456,7 @@ function callSendAPI(messageData) {
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0");
+  console.log("Koguchi Chino Messenger Bot v1.0.1");
   console.log("Copyright (c) 2017 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
