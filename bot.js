@@ -95,7 +95,7 @@ function receivedMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-  setPersistentMenu(senderID);
+  // setPersistentMenu(senderID);
   console.log("Received message for user %d and page %d at %d with message:",
     senderID, recipientID, timeOfMessage);
   console.log(JSON.stringify(message));
@@ -449,7 +449,7 @@ function callSendAPI(messageData) {
       console.error("Unable to send message.");
       console.error(response);
       console.error(error);
-      //sendErrorMessage(recipientId);
+      sendErrorMessage(recipientId);
     }
   });
 }
