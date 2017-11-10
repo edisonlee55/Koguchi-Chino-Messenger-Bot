@@ -95,7 +95,7 @@ function receivedMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-  // setPersistentMenu(senderID);
+  setPersistentMenu(senderID);
   console.log("Received message for user %d and page %d at %d with message:",
     senderID, recipientID, timeOfMessage);
   console.log(JSON.stringify(message));
@@ -400,27 +400,37 @@ function sendLoliPhoto(recipientId) {
   });
 }
 
-/* function setPersistentMenu(recipientId) {
+function setPersistentMenu(recipientId) {
   var messageData = {
     persistent_menu: [{
       call_to_actions: [
         {
-          type: "postback",
-          title: "About",
-          payload: {
-            recipient:{
-              id:recipientId
+          title: "功能選單",
+          type: "nested",
+          call_to_actions: [
+            {
+              title: "來張智乃照片!",
+              type: "postback",
+              payload: "SEND_CHINO_PHOTO"
             },
-            message:{
-              text:"Koguchi Chino Messenger Bot v1.0\nBy edisonlee55"
+            {
+              title: "來張蘿莉照片!",
+              type: "postback",
+              payload: "SEND_LOLI_PHOTO"
             }
-          }
+          ]
+        },
+        {
+          type: "web_url",
+          title: "Koguchi Chino Messenger Bot v1.0.1",
+          url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
+          webview_height_ratio: "full"
         }
       ]
     }]
   }
   callSendAPI(messageData);
-} */
+}
 
 function callSendAPI(messageData) {
   request({
