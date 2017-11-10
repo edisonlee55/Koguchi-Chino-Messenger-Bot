@@ -275,9 +275,67 @@ function sendDefaultMessage(recipientId) {
   callSendAPI(attachmentMessageData);
 }
 
+function sendErrorMessage(recipientId) {
+  var textMessageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: "抱歉，系統發生錯誤，無法處理您的要求，請在試一次，請選擇您需要的功能:"
+    }
+  }
+  var attachmentMessageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: [{
+            title: "我要看智乃!",
+            subtitle: "",
+            image_url: "https://cdn.edisonlee55.com/edisonlee55/resources/photo/313cc54d-25ad-4119-8b3b-1aadc0787564.png",
+            buttons: [{
+              type: "postback",
+              title: "來張智乃照片!",
+              payload: "SEND_CHINO_PHOTO",
+            }],
+          }, {
+            title: "我要看蘿莉!",
+            subtitle: "",
+            image_url: "https://cdn.edisonlee55.com/edisonlee55/resources/photo/0cef8f2d-611a-403a-a768-0b1cd8ebfab1.jpg",
+            buttons: [{
+              type: "postback",
+              title: "來張蘿莉照片!",
+              payload: "SEND_LOLI_PHOTO",
+            }]
+          }]
+        }
+      },
+      quick_replies: [
+        {
+          content_type: "text",
+          title: "來張智乃照片!",
+          payload: "SEND_CHINO_PHOTO",
+        },
+        {
+          content_type: "text",
+          title: "來張蘿莉照片!",
+          payload: "SEND_LOLI_PHOTO",
+        }
+      ]
+    }
+  };
+  callSendAPI(textMessageData);
+  callSendAPI(attachmentMessageData);
+}
+
 function sendChinoPhoto(recipientId) {
   getPixivImgLink('https://www.pixiv.net/search.php?word=%E6%99%BA%E4%B9%83&order=date_d&p=' + Math.round(1 + Math.random() * 150), function (links) {
     var imgurl = links[Math.round(Math.random() * links.length - 1)];
+    console.log("Chino Pixiv Img Link: " + imgurl);
     var messageData = {
       recipient: {
         id: recipientId
@@ -311,6 +369,7 @@ function sendChinoPhoto(recipientId) {
 function sendLoliPhoto(recipientId) {
   getPixivImgLink('https://www.pixiv.net/search.php?word=%E3%83%AD%E3%83%AA%20OR%20(%20loli%20)&order=date_d&p=' + Math.round(1 + Math.random() * 1000), function (links) {
     var imgurl = links[Math.round(Math.random() * links.length - 1)];
+    console.log("Loli Pixiv Img Link: " + imgurl);
     var messageData = {
       recipient: {
         id: recipientId
@@ -380,6 +439,7 @@ function callSendAPI(messageData) {
       console.error("Unable to send message.");
       console.error(response);
       console.error(error);
+      sendErrorMessage(recipientId);
     }
   });
 }
