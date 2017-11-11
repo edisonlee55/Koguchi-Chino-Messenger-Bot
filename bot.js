@@ -11,7 +11,6 @@ var messengerButton = "<html><head><title>Koguchi Chino Messenger Bot</title></h
 
 // The rest of the code implements the routes for our Express server.
 let app = express();
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -422,7 +421,7 @@ function setPersistentMenu(recipientId) {
         },
         {
           type: "web_url",
-          title: "Koguchi Chino Messenger Bot v1.0.3",
+          title: "Koguchi Chino Messenger Bot v1.0.4",
           url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
           webview_height_ratio: "full"
         }
@@ -456,7 +455,7 @@ function callSendAPI(messageData) {
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0.3");
+  console.log("Koguchi Chino Messenger Bot v1.0.4");
   console.log("Copyright (c) 2017 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
