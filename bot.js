@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2017 MING-CHIEN LEE
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 //
 // This is main file containing code implementing the Express server and functionality for the Express Koguchi Chino Messenger bot.
 //
