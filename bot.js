@@ -430,6 +430,11 @@ function setPersistentMenu() {
           type: "nested",
           call_to_actions: [
             {
+              title: "開始使用",
+              type: "postback",
+              payload: "SEND_START_MESSAGE"
+            },
+            {
               title: "來張智乃照片!",
               type: "postback",
               payload: "SEND_CHINO_PHOTO"
@@ -443,7 +448,7 @@ function setPersistentMenu() {
         },
         {
           type: "web_url",
-          title: "Koguchi Chino Bot v1.0.9",
+          title: "Koguchi Chino Bot v1.0.10",
           url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
           webview_height_ratio: "full"
         }
@@ -504,7 +509,7 @@ setPersistentMenu();
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0.9");
+  console.log("Koguchi Chino Messenger Bot v1.0.10");
   console.log("Copyright (c) 2017 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
