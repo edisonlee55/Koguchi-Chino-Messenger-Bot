@@ -103,7 +103,6 @@ function receivedMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-  // setPersistentMenu(senderID);
   console.log("Received message for user %d and page %d at %d with message:",
     senderID, recipientID, timeOfMessage);
   console.log(JSON.stringify(message));
@@ -154,6 +153,9 @@ function receivedPostback(event) {
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
   switch (payload) {
+    case 'SEND_START_MESSAGE':
+      sendStartMessage(senderID);
+      break;
     case 'SEND_CHINO_PHOTO':
       sendChinoPhoto(senderID);
       break;
@@ -408,9 +410,20 @@ function sendLoliPhoto(recipientId) {
   });
 }
 
-function setPersistentMenu(recipientId) {
+function setGetStartedButton() {
+  var messageData = {
+    get_started: {
+      payload: "SEND_START_MESSAGE"
+    }
+  }
+
+  callMessengerProfileAPI(messageData);
+}
+
+function setPersistentMenu() {
   var messageData = {
     persistent_menu: [{
+      locale: "default",
       call_to_actions: [
         {
           title: "功能選單",
@@ -430,20 +443,20 @@ function setPersistentMenu(recipientId) {
         },
         {
           type: "web_url",
-          title: "Koguchi Chino Messenger Bot v1.0.8",
+          title: "Koguchi Chino Bot v1.0.9",
           url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
           webview_height_ratio: "full"
         }
       ]
     }]
   }
-  callSendAPI(messageData);
+  callMessengerProfileAPI(messageData);
 }
 
 function callSendAPI(messageData) {
   request({
     uri: 'https://graph.facebook.com/v2.11/me/messages',
-    qs: { 
+    qs: {
       access_token: process.env.PAGE_ACCESS_TOKEN,
       appsecret_proof: appsecret_proof
     },
@@ -465,9 +478,33 @@ function callSendAPI(messageData) {
   });
 }
 
+function callMessengerProfileAPI(messageData) {
+  request({
+    uri: 'https://graph.facebook.com/v2.11/me/messenger_profile',
+    qs: {
+      access_token: process.env.PAGE_ACCESS_TOKEN,
+      appsecret_proof: appsecret_proof
+    },
+    method: 'POST',
+    json: messageData
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log("Successfully set messenger profile");
+    } else {
+      console.error("Unable to set messenger profile.");
+      console.error(response);
+      console.error(error);
+      // sendErrorMessage(recipientId);
+    }
+  });
+}
+
+setGetStartedButton();
+setPersistentMenu();
+
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0.8");
+  console.log("Koguchi Chino Messenger Bot v1.0.9");
   console.log("Copyright (c) 2017 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
