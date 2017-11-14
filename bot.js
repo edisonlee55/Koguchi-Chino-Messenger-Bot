@@ -14,6 +14,8 @@ const bodyParser = require('body-parser');
 const cheerio = require('cheerio');
 const request = require('request');
 const path = require('path');
+const crypto = require('crypto');
+const appsecret_proof = crypto.createHmac('sha256', process.env.APP_SECRET).update(process.env.PAGE_ACCESS_TOKEN).digest('hex');
 var messengerButton = "<html><head><title>Koguchi Chino Messenger Bot</title></head><body><h1>Koguchi Chino Messenger Bot</h1><script src=\"https://button.glitch.me/button.js\" data-style=\"glitch\"></script><div class=\"glitchButton\" style=\"position:fixed;top:20px;right:20px;\"></div></body></html>";
 
 // The rest of the code implements the routes for our Express server.
@@ -441,7 +443,10 @@ function setPersistentMenu(recipientId) {
 function callSendAPI(messageData) {
   request({
     uri: 'https://graph.facebook.com/v2.11/me/messages',
-    qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+    qs: { 
+      access_token: process.env.PAGE_ACCESS_TOKEN,
+      appsecret_proof: appsecret_proof
+    },
     method: 'POST',
     json: messageData
   }, function (error, response, body) {
