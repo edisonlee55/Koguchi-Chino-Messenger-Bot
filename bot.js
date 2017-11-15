@@ -79,7 +79,7 @@ app.post('/webhook', function (req, res) {
 });
 
 
-function getPixivImgLink(url, callback) {
+function getPixivImgLink(url, recipientId, callback) {
   var links = [];
   request(url, function (err, res, body) {
     if (!err && res.statusCode == 200) {
@@ -92,7 +92,11 @@ function getPixivImgLink(url, callback) {
         }
       });
       callback(links);
-    };
+    } else {
+      console.error("getPixivImgLink Error: " + err);
+      sendErrorMessage(recipientId);
+      callback("error");
+    }
   });
 }
 
@@ -343,70 +347,74 @@ function sendErrorMessage(recipientId) {
 }
 
 function sendChinoPhoto(recipientId) {
-  getPixivImgLink('https://www.pixiv.net/search.php?word=%E6%99%BA%E4%B9%83&order=date_d&p=' + Math.round(1 + Math.random() * 150), function (links) {
-    var imgurl = links[Math.round(Math.random() * links.length - 1)];
-    console.log("Chino Pixiv Img Link: " + imgurl);
-    var messageData = {
-      recipient: {
-        id: recipientId
-      },
-      message: {
-        attachment: {
-          type: "image",
-          payload: {
-            url: imgurl,
-            is_reusable: false
-          }
+  getPixivImgLink('https://www.pixiv.net/search.php?word=%E6%99%BA%E4%B9%83&order=date_d&p=' + Math.round(1 + Math.random() * 150), recipientId, function (links) {
+    if (links !== "error") {
+      var imgurl = links[Math.round(Math.random() * links.length - 1)];
+      console.log("Chino Pixiv Img Link: " + imgurl);
+      var messageData = {
+        recipient: {
+          id: recipientId
         },
-        quick_replies: [
-          {
-            content_type: "text",
-            title: "來張智乃照片!",
-            payload: "SEND_CHINO_PHOTO",
+        message: {
+          attachment: {
+            type: "image",
+            payload: {
+              url: imgurl,
+              is_reusable: false
+            }
           },
-          {
-            content_type: "text",
-            title: "來張蘿莉照片!",
-            payload: "SEND_LOLI_PHOTO",
-          }
-        ]
+          quick_replies: [
+            {
+              content_type: "text",
+              title: "來張智乃照片!",
+              payload: "SEND_CHINO_PHOTO",
+            },
+            {
+              content_type: "text",
+              title: "來張蘿莉照片!",
+              payload: "SEND_LOLI_PHOTO",
+            }
+          ]
+        }
       }
+      callSendAPI(messageData);
     }
-    callSendAPI(messageData);
   });
 }
 
 function sendLoliPhoto(recipientId) {
-  getPixivImgLink('https://www.pixiv.net/search.php?word=%E3%83%AD%E3%83%AA%20OR%20(%20loli%20)&order=date_d&p=' + Math.round(1 + Math.random() * 1000), function (links) {
-    var imgurl = links[Math.round(Math.random() * links.length - 1)];
-    console.log("Loli Pixiv Img Link: " + imgurl);
-    var messageData = {
-      recipient: {
-        id: recipientId
-      },
-      message: {
-        attachment: {
-          type: "image",
-          payload: {
-            url: imgurl,
-            is_reusable: false
-          }
+  getPixivImgLink('https://www.pixiv.net/search.php?word=%E3%83%AD%E3%83%AA%20OR%20(%20loli%20)&order=date_d&p=' + Math.round(1 + Math.random() * 1000), recipientId, function (links) {
+    if (links !== "error") {
+      var imgurl = links[Math.round(Math.random() * links.length - 1)];
+      console.log("Loli Pixiv Img Link: " + imgurl);
+      var messageData = {
+        recipient: {
+          id: recipientId
         },
-        quick_replies: [
-          {
-            content_type: "text",
-            title: "來張智乃照片!",
-            payload: "SEND_CHINO_PHOTO",
+        message: {
+          attachment: {
+            type: "image",
+            payload: {
+              url: imgurl,
+              is_reusable: false
+            }
           },
-          {
-            content_type: "text",
-            title: "來張蘿莉照片!",
-            payload: "SEND_LOLI_PHOTO",
-          }
-        ]
+          quick_replies: [
+            {
+              content_type: "text",
+              title: "來張智乃照片!",
+              payload: "SEND_CHINO_PHOTO",
+            },
+            {
+              content_type: "text",
+              title: "來張蘿莉照片!",
+              payload: "SEND_LOLI_PHOTO",
+            }
+          ]
+        }
       }
+      callSendAPI(messageData);
     }
-    callSendAPI(messageData);
   });
 }
 
@@ -448,7 +456,7 @@ function setPersistentMenu() {
         },
         {
           type: "web_url",
-          title: "Koguchi Chino Bot v1.0.10",
+          title: "Koguchi Chino Bot v1.0.11",
           url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
           webview_height_ratio: "full"
         }
@@ -509,7 +517,7 @@ setPersistentMenu();
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0.10");
+  console.log("Koguchi Chino Messenger Bot v1.0.11");
   console.log("Copyright (c) 2017 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
