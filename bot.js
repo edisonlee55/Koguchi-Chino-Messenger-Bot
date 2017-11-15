@@ -80,6 +80,7 @@ app.post('/webhook', function (req, res) {
 
 
 function getPixivImgLink(url, recipientId, callback) {
+  console.log("Pixiv Img List Link: " + url);
   var links = [];
   request(url, function (err, res, body) {
     if (!err && res.statusCode == 200) {
@@ -456,7 +457,7 @@ function setPersistentMenu() {
         },
         {
           type: "web_url",
-          title: "Koguchi Chino Bot v1.0.11",
+          title: "Koguchi Chino Bot v1.0.12",
           url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
           webview_height_ratio: "full"
         }
@@ -517,7 +518,7 @@ setPersistentMenu();
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0.11");
+  console.log("Koguchi Chino Messenger Bot v1.0.12");
   console.log("Copyright (c) 2017 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
