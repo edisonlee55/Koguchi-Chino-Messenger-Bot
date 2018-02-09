@@ -81,7 +81,7 @@ app.post('/webhook', function (req, res) {
 
 function getPixivImgLink(url, recipientId, callback) {
   console.log("Pixiv Img List Link: " + url);
-  var links = [];
+  var illustIdList = [];
   request(url, function (err, res, body) {
     if (!err && res.statusCode == 200) {
       var $ = cheerio.load(body);
@@ -89,10 +89,10 @@ function getPixivImgLink(url, recipientId, callback) {
         var data = element.attribs['data-items'];
         data = JSON.parse(data);
         for (var i = 0; i < data.length; i++) {
-          links.push(data[i].url);
+          illustIdList.push(data[i].illustId);
         }
       });
-      callback(links);
+      callback(illustIdList);
     } else {
       console.error("getPixivImgLink " + err);
       sendErrorMessage(recipientId);
@@ -348,9 +348,9 @@ function sendErrorMessage(recipientId) {
 }
 
 function sendChinoPhoto(recipientId) {
-  getPixivImgLink('https://www.pixiv.net/search.php?word=%E6%99%BA%E4%B9%83&order=date_d&p=' + Math.round(1 + Math.random() * 150), recipientId, function (links) {
-    if (links !== "error") {
-      var imgurl = links[Math.round(Math.random() * links.length - 1)];
+  getPixivImgLink('https://www.pixiv.net/search.php?word=%E6%99%BA%E4%B9%83&order=date_d&p=' + Math.round(1 + Math.random() * 150), recipientId, function (illustIdList) {
+    if (illustIdList !== "error") {
+      var imgurl = "https://pixiv.cat/" + illustIdList[Math.round(Math.random() * illustIdList.length - 1)] + ".png";
       console.log("Chino Pixiv Img Link: " + imgurl);
       var messageData = {
         recipient: {
@@ -384,9 +384,9 @@ function sendChinoPhoto(recipientId) {
 }
 
 function sendLoliPhoto(recipientId) {
-  getPixivImgLink('https://www.pixiv.net/search.php?word=%E3%83%AD%E3%83%AA%20OR%20(%20loli%20)&order=date_d&p=' + Math.round(1 + Math.random() * 1000), recipientId, function (links) {
-    if (links !== "error") {
-      var imgurl = links[Math.round(Math.random() * links.length - 1)];
+  getPixivImgLink('https://www.pixiv.net/search.php?word=%E3%83%AD%E3%83%AA%20OR%20(%20loli%20)&order=date_d&p=' + Math.round(1 + Math.random() * 1000), recipientId, function (illustIdList) {
+    if (illustIdList !== "error") {
+      var imgurl = "https://pixiv.cat/" + illustIdList[Math.round(Math.random() * illustIdList.length - 1)] + ".png";
       console.log("Loli Pixiv Img Link: " + imgurl);
       var messageData = {
         recipient: {
@@ -518,7 +518,7 @@ setPersistentMenu();
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0.13");
+  console.log("Koguchi Chino Messenger Bot v1.0.14");
   console.log("Copyright (c) 2017 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
