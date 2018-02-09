@@ -352,33 +352,40 @@ function sendChinoPhoto(recipientId) {
     if (illustIdList !== "error") {
       var imgurl = "https://pixiv.cat/" + illustIdList[Math.round(Math.random() * illustIdList.length - 1)] + ".png";
       console.log("Chino Pixiv Img Link: " + imgurl);
-      var messageData = {
-        recipient: {
-          id: recipientId
-        },
-        message: {
-          attachment: {
-            type: "image",
-            payload: {
-              url: imgurl,
-              is_reusable: false
-            }
-          },
-          quick_replies: [
-            {
-              content_type: "text",
-              title: "來張智乃照片!",
-              payload: "SEND_CHINO_PHOTO",
+      request(imgurl, function (err, res, body) {
+        if (!err && res.statusCode == 200) {
+          var messageData = {
+            recipient: {
+              id: recipientId
             },
-            {
-              content_type: "text",
-              title: "來張蘿莉照片!",
-              payload: "SEND_LOLI_PHOTO",
+            message: {
+              attachment: {
+                type: "image",
+                payload: {
+                  url: imgurl,
+                  is_reusable: false
+                }
+              },
+              quick_replies: [
+                {
+                  content_type: "text",
+                  title: "來張智乃照片!",
+                  payload: "SEND_CHINO_PHOTO",
+                },
+                {
+                  content_type: "text",
+                  title: "來張蘿莉照片!",
+                  payload: "SEND_LOLI_PHOTO",
+                }
+              ]
             }
-          ]
+          }
+          callSendAPI(messageData);
+        } else {
+          getPixivImgLink('https://www.pixiv.net/search.php?word=%E6%99%BA%E4%B9%83&order=date_d&p=' + Math.round(1 + Math.random() * 150), recipientId, illustIdList);
         }
-      }
-      callSendAPI(messageData);
+      });
+
     }
   });
 }
@@ -388,33 +395,39 @@ function sendLoliPhoto(recipientId) {
     if (illustIdList !== "error") {
       var imgurl = "https://pixiv.cat/" + illustIdList[Math.round(Math.random() * illustIdList.length - 1)] + ".png";
       console.log("Loli Pixiv Img Link: " + imgurl);
-      var messageData = {
-        recipient: {
-          id: recipientId
-        },
-        message: {
-          attachment: {
-            type: "image",
-            payload: {
-              url: imgurl,
-              is_reusable: false
-            }
-          },
-          quick_replies: [
-            {
-              content_type: "text",
-              title: "來張智乃照片!",
-              payload: "SEND_CHINO_PHOTO",
+      request(imgurl, function (err, res, body) {
+        if (!err && res.statusCode == 200) {
+          var messageData = {
+            recipient: {
+              id: recipientId
             },
-            {
-              content_type: "text",
-              title: "來張蘿莉照片!",
-              payload: "SEND_LOLI_PHOTO",
+            message: {
+              attachment: {
+                type: "image",
+                payload: {
+                  url: imgurl,
+                  is_reusable: false
+                }
+              },
+              quick_replies: [
+                {
+                  content_type: "text",
+                  title: "來張智乃照片!",
+                  payload: "SEND_CHINO_PHOTO",
+                },
+                {
+                  content_type: "text",
+                  title: "來張蘿莉照片!",
+                  payload: "SEND_LOLI_PHOTO",
+                }
+              ]
             }
-          ]
+          }
+          callSendAPI(messageData);
+        } else {
+          getPixivImgLink('https://www.pixiv.net/search.php?word=%E3%83%AD%E3%83%AA%20OR%20(%20loli%20)&order=date_d&p=' + Math.round(1 + Math.random() * 1000), recipientId, illustIdList);
         }
-      }
-      callSendAPI(messageData);
+      });
     }
   });
 }
@@ -457,7 +470,7 @@ function setPersistentMenu() {
         },
         {
           type: "web_url",
-          title: "Koguchi Chino Bot v1.0.13",
+          title: "Koguchi Chino Bot v1.0.14",
           url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
           webview_height_ratio: "full"
         }
