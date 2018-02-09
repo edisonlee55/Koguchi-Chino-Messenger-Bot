@@ -82,7 +82,13 @@ app.post('/webhook', function (req, res) {
 function getPixivImgLink(url, recipientId, callback) {
   console.log("Pixiv Img List Link: " + url);
   var illustIdList = [];
-  request(url, function (err, res, body) {
+  var option = {
+    url: url,
+    headers: {
+      'Cookie': process.env.PIXIV_COOKIE,
+    }
+  };
+  request(option, function (err, res, body) {
     if (!err && res.statusCode == 200) {
       var $ = cheerio.load(body);
       $("#js-mount-point-search-result-list").each(function (index, element) {
