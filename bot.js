@@ -44,6 +44,100 @@ app.get("/", function (req, res) {
   res.end();
 });
 
+function callSendAPI(messageData) {
+  request({
+    uri: "https://graph.facebook.com/v2.12/me/messages",
+    qs: {
+      access_token: process.env.PAGE_ACCESS_TOKEN,
+      appsecret_proof: appsecretProof
+    },
+    method: "POST",
+    json: messageData
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var recipientId = body.recipient_id;
+      var messageId = body.message_id;
+
+      console.log("Successfully sent message with id %s to recipient %s",
+        messageId, recipientId);
+    } else {
+      console.error("Unable to send message.");
+      console.error(response);
+      console.error(error);
+      // sendErrorMessage(recipientId);
+    }
+  });
+}
+
+function callMessengerProfileAPI(messageData) {
+  request({
+    uri: "https://graph.facebook.com/v2.12/me/messenger_profile",
+    qs: {
+      access_token: process.env.PAGE_ACCESS_TOKEN,
+      appsecret_proof: appsecretProof
+    },
+    method: "POST",
+    json: messageData
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log("Successfully set messenger profile");
+    } else {
+      console.error("Unable to set messenger profile.");
+      console.error(response);
+      console.error(error);
+      // sendErrorMessage(recipientId);
+    }
+  });
+}
+
+function setGetStartedButton() {
+  var messageData = {
+    get_started: {
+      payload: "SEND_START_MESSAGE"
+    }
+  }
+
+  callMessengerProfileAPI(messageData);
+}
+
+function setPersistentMenu() {
+  var messageData = {
+    persistent_menu: [{
+      locale: "default",
+      call_to_actions: [
+        {
+          title: "功能選單",
+          type: "nested",
+          call_to_actions: [
+            {
+              title: "開始使用",
+              type: "postback",
+              payload: "SEND_START_MESSAGE"
+            },
+            {
+              title: "來張智乃照片!",
+              type: "postback",
+              payload: "SEND_CHINO_PHOTO"
+            },
+            {
+              title: "來張蘿莉照片!",
+              type: "postback",
+              payload: "SEND_LOLI_PHOTO"
+            }
+          ]
+        },
+        {
+          type: "web_url",
+          title: "Koguchi Chino Bot v1.0.15",
+          url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
+          webview_height_ratio: "full"
+        }
+      ]
+    }]
+  }
+  callMessengerProfileAPI(messageData);
+}
+
 //////////////////////////
 // Sending helpers
 //////////////////////////
@@ -446,100 +540,6 @@ app.post("/webhook", function (req, res) {
     res.sendStatus(200);
   }
 });
-
-function callSendAPI(messageData) {
-  request({
-    uri: "https://graph.facebook.com/v2.12/me/messages",
-    qs: {
-      access_token: process.env.PAGE_ACCESS_TOKEN,
-      appsecret_proof: appsecretProof
-    },
-    method: "POST",
-    json: messageData
-  }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id;
-      var messageId = body.message_id;
-
-      console.log("Successfully sent message with id %s to recipient %s",
-        messageId, recipientId);
-    } else {
-      console.error("Unable to send message.");
-      console.error(response);
-      console.error(error);
-      // sendErrorMessage(recipientId);
-    }
-  });
-}
-
-function callMessengerProfileAPI(messageData) {
-  request({
-    uri: "https://graph.facebook.com/v2.12/me/messenger_profile",
-    qs: {
-      access_token: process.env.PAGE_ACCESS_TOKEN,
-      appsecret_proof: appsecretProof
-    },
-    method: "POST",
-    json: messageData
-  }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      console.log("Successfully set messenger profile");
-    } else {
-      console.error("Unable to set messenger profile.");
-      console.error(response);
-      console.error(error);
-      // sendErrorMessage(recipientId);
-    }
-  });
-}
-
-function setGetStartedButton() {
-  var messageData = {
-    get_started: {
-      payload: "SEND_START_MESSAGE"
-    }
-  }
-
-  callMessengerProfileAPI(messageData);
-}
-
-function setPersistentMenu() {
-  var messageData = {
-    persistent_menu: [{
-      locale: "default",
-      call_to_actions: [
-        {
-          title: "功能選單",
-          type: "nested",
-          call_to_actions: [
-            {
-              title: "開始使用",
-              type: "postback",
-              payload: "SEND_START_MESSAGE"
-            },
-            {
-              title: "來張智乃照片!",
-              type: "postback",
-              payload: "SEND_CHINO_PHOTO"
-            },
-            {
-              title: "來張蘿莉照片!",
-              type: "postback",
-              payload: "SEND_LOLI_PHOTO"
-            }
-          ]
-        },
-        {
-          type: "web_url",
-          title: "Koguchi Chino Bot v1.0.15",
-          url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
-          webview_height_ratio: "full"
-        }
-      ]
-    }]
-  }
-  callMessengerProfileAPI(messageData);
-}
 
 setGetStartedButton();
 setPersistentMenu();
