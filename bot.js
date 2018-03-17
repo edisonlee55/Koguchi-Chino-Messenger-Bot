@@ -546,7 +546,7 @@ setPersistentMenu();
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0.18");
+  console.log("Koguchi Chino Messenger Bot v1.0.19");
   console.log("Copyright (c) 2018 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
