@@ -15,7 +15,7 @@ const cheerio = require("cheerio");
 const request = require("request");
 const path = require("path");
 const crypto = require("crypto");
-const appsecret_proof = crypto.createHmac("sha256", process.env.APP_SECRET).update(process.env.PAGE_ACCESS_TOKEN).digest("hex");
+const appsecretProof = crypto.createHmac("sha256", process.env.APP_SECRET).update(process.env.PAGE_ACCESS_TOKEN).digest("hex");
 var messengerButton = "<html><head><title>Koguchi Chino Messenger Bot</title></head><body><h1>Koguchi Chino Messenger Bot</h1><script src=\"https://button.glitch.me/button.js\" data-style=\"glitch\"></script><div class=\"glitchButton\" style=\"position:fixed;top:20px;right:20px;\"></div></body></html>";
 
 // The rest of the code implements the routes for our Express server.
@@ -43,6 +43,76 @@ app.get("/", function (req, res) {
   res.write(messengerButton);
   res.end();
 });
+
+// Incoming events handling
+function receivedMessage(event) {
+  var senderID = event.sender.id;
+  var recipientID = event.recipient.id;
+  var timeOfMessage = event.timestamp;
+  var message = event.message;
+  console.log("Received message for user %d and page %d at %d with message:",
+    senderID, recipientID, timeOfMessage);
+  console.log(JSON.stringify(message));
+
+  var messageId = message.mid;
+
+  var messageText = message.text;
+  var messageAttachments = message.attachments;
+  if (messageText) {
+    // If we receive a text message, check to see if it matches a keyword
+    // and send back the template example. Otherwise, just echo the text we received.
+    switch (messageText) {
+      case "開始使用":
+        sendStartMessage(senderID);
+        break;
+      case "start":
+        sendStartMessage(senderID);
+        break;
+      case "loli":
+        sendLoliPhoto(senderID);
+        break;
+      case "chino":
+        sendChinoPhoto(senderID);
+        break;
+      case "來張智乃照片!":
+        sendChinoPhoto(senderID);
+        break;
+      case "來張蘿莉照片!":
+        sendLoliPhoto(senderID);
+        break;
+      default:
+        sendDefaultMessage(senderID, messageText);
+    }
+  } else if (messageAttachments) {
+    sendDefaultMessage(senderID);
+  }
+}
+
+function receivedPostback(event) {
+  var senderID = event.sender.id;
+  var recipientID = event.recipient.id;
+  var timeOfPostback = event.timestamp;
+
+  // The 'payload' param is a developer-defined field which is set in a postback 
+  // button for Structured Messages. 
+  var payload = event.postback.payload;
+  console.log("Received postback for user %d and page %d with payload '%s' " +
+    "at %d", senderID, recipientID, payload, timeOfPostback);
+
+  switch (payload) {
+    case "SEND_START_MESSAGE":
+      sendStartMessage(senderID);
+      break;
+    case "SEND_CHINO_PHOTO":
+      sendChinoPhoto(senderID);
+      break;
+    case "SEND_LOLI_PHOTO":
+      sendLoliPhoto(senderID);
+      break;
+    default:
+      console.error("Unexpected payload: " + payload);
+  }
+}
 
 // Message processing
 app.post("/webhook", function (req, res) {
@@ -83,7 +153,7 @@ function callSendAPI(messageData) {
     uri: "https://graph.facebook.com/v2.12/me/messages",
     qs: {
       access_token: process.env.PAGE_ACCESS_TOKEN,
-      appsecret_proof: appsecret_proof
+      appsecret_proof: appsecretProof
     },
     method: "POST",
     json: messageData
@@ -108,7 +178,7 @@ function callMessengerProfileAPI(messageData) {
     uri: "https://graph.facebook.com/v2.12/me/messenger_profile",
     qs: {
       access_token: process.env.PAGE_ACCESS_TOKEN,
-      appsecret_proof: appsecret_proof
+      appsecret_proof: appsecretProof
     },
     method: "POST",
     json: messageData
@@ -123,6 +193,57 @@ function callMessengerProfileAPI(messageData) {
     }
   });
 }
+
+function setGetStartedButton() {
+  var messageData = {
+    get_started: {
+      payload: "SEND_START_MESSAGE"
+    }
+  }
+
+  callMessengerProfileAPI(messageData);
+}
+
+function setPersistentMenu() {
+  var messageData = {
+    persistent_menu: [{
+      locale: "default",
+      call_to_actions: [
+        {
+          title: "功能選單",
+          type: "nested",
+          call_to_actions: [
+            {
+              title: "開始使用",
+              type: "postback",
+              payload: "SEND_START_MESSAGE"
+            },
+            {
+              title: "來張智乃照片!",
+              type: "postback",
+              payload: "SEND_CHINO_PHOTO"
+            },
+            {
+              title: "來張蘿莉照片!",
+              type: "postback",
+              payload: "SEND_LOLI_PHOTO"
+            }
+          ]
+        },
+        {
+          type: "web_url",
+          title: "Koguchi Chino Bot v1.0.15",
+          url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
+          webview_height_ratio: "full"
+        }
+      ]
+    }]
+  }
+  callMessengerProfileAPI(messageData);
+}
+
+setGetStartedButton();
+setPersistentMenu();
 
 function getPixivImgLink(url, recipientId, callback) {
   console.log("Pixiv Img List Link: " + url);
@@ -422,127 +543,6 @@ function sendErrorMessage(recipientId) {
   callSendAPI(textMessageData);
   callSendAPI(attachmentMessageData);
 }
-
-// Incoming events handling
-function receivedMessage(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfMessage = event.timestamp;
-  var message = event.message;
-  console.log("Received message for user %d and page %d at %d with message:",
-    senderID, recipientID, timeOfMessage);
-  console.log(JSON.stringify(message));
-
-  var messageId = message.mid;
-
-  var messageText = message.text;
-  var messageAttachments = message.attachments;
-  if (messageText) {
-    // If we receive a text message, check to see if it matches a keyword
-    // and send back the template example. Otherwise, just echo the text we received.
-    switch (messageText) {
-      case "開始使用":
-        sendStartMessage(senderID);
-        break;
-      case "start":
-        sendStartMessage(senderID);
-        break;
-      case "loli":
-        sendLoliPhoto(senderID);
-        break;
-      case "chino":
-        sendChinoPhoto(senderID);
-        break;
-      case "來張智乃照片!":
-        sendChinoPhoto(senderID);
-        break;
-      case "來張蘿莉照片!":
-        sendLoliPhoto(senderID);
-        break;
-      default:
-        sendDefaultMessage(senderID, messageText);
-    }
-  } else if (messageAttachments) {
-    sendDefaultMessage(senderID);
-  }
-}
-
-function receivedPostback(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfPostback = event.timestamp;
-
-  // The 'payload' param is a developer-defined field which is set in a postback 
-  // button for Structured Messages. 
-  var payload = event.postback.payload;
-  console.log("Received postback for user %d and page %d with payload '%s' " +
-    "at %d", senderID, recipientID, payload, timeOfPostback);
-
-  switch (payload) {
-    case "SEND_START_MESSAGE":
-      sendStartMessage(senderID);
-      break;
-    case "SEND_CHINO_PHOTO":
-      sendChinoPhoto(senderID);
-      break;
-    case "SEND_LOLI_PHOTO":
-      sendLoliPhoto(senderID);
-      break;
-    default:
-      console.error("Unexpected payload: " + payload);
-  }
-}
-
-function setGetStartedButton() {
-  var messageData = {
-    get_started: {
-      payload: "SEND_START_MESSAGE"
-    }
-  }
-
-  callMessengerProfileAPI(messageData);
-}
-
-function setPersistentMenu() {
-  var messageData = {
-    persistent_menu: [{
-      locale: "default",
-      call_to_actions: [
-        {
-          title: "功能選單",
-          type: "nested",
-          call_to_actions: [
-            {
-              title: "開始使用",
-              type: "postback",
-              payload: "SEND_START_MESSAGE"
-            },
-            {
-              title: "來張智乃照片!",
-              type: "postback",
-              payload: "SEND_CHINO_PHOTO"
-            },
-            {
-              title: "來張蘿莉照片!",
-              type: "postback",
-              payload: "SEND_LOLI_PHOTO"
-            }
-          ]
-        },
-        {
-          type: "web_url",
-          title: "Koguchi Chino Bot v1.0.15",
-          url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
-          webview_height_ratio: "full"
-        }
-      ]
-    }]
-  }
-  callMessengerProfileAPI(messageData);
-}
-
-setGetStartedButton();
-setPersistentMenu();
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
