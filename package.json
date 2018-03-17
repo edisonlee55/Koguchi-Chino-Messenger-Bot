@@ -1,6 +1,6 @@
 {
   "name": "koguchi-chino-messenger-bot",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Koguchi Chino Messenger Bot",
   "main": "index.js",
   "scripts": {
