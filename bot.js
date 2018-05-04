@@ -46,7 +46,7 @@ app.get("/", function (req, res) {
 
 function callSendAPI(messageData) {
   request({
-    uri: "https://graph.facebook.com/v2.12/me/messages",
+    uri: "https://graph.facebook.com/v3.0/me/messages",
     qs: {
       access_token: process.env.PAGE_ACCESS_TOKEN,
       appsecret_proof: appsecretProof
@@ -71,7 +71,7 @@ function callSendAPI(messageData) {
 
 function callMessengerProfileAPI(messageData) {
   request({
-    uri: "https://graph.facebook.com/v2.12/me/messenger_profile",
+    uri: "https://graph.facebook.com/v3.0/me/messenger_profile",
     qs: {
       access_token: process.env.PAGE_ACCESS_TOKEN,
       appsecret_proof: appsecretProof
@@ -128,7 +128,7 @@ function setPersistentMenu() {
         },
         {
           type: "web_url",
-          title: "Koguchi Chino Bot v1.0.15",
+          title: "Koguchi Chino Bot v1.0.20",
           url: "https://github.com/edisonlee55/Koguchi-Chino-Messenger-Bot/",
           webview_height_ratio: "full"
         }
@@ -546,7 +546,7 @@ setPersistentMenu();
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
-  console.log("Koguchi Chino Messenger Bot v1.0.19");
+  console.log("Koguchi Chino Messenger Bot v1.0.20");
   console.log("Copyright (c) 2018 MING-CHIEN LEE. All rights reserved.\n");
   console.log("Listening on port %s", server.address().port);
 });
