@@ -4,7 +4,9 @@
   "description": "Koguchi Chino Messenger Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,8 @@
     "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
-    "request": "^2.83.0"
-  }
+    "request": "^2.83.0",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
